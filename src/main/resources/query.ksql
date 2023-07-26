@@ -1,0 +1,12 @@
+-- Buat stream untuk data XML dari topik 'xml_input_topic'
+CREATE STREAM xml_input_stream3 (xml_data STRING)
+    WITH (KAFKA_TOPIC='test-xml', VALUE_FORMAT='KAFKA');
+
+-- Buat stream untuk data JSON yang telah diubah dari XML menggunakan UDF 'XmlToJSON'
+CREATE STREAM json_output_stream AS
+    SELECT XmlToJSON__convertXMLtoJSONWithErr(xml_data) AS json_data
+    FROM xml_input_stream;
+
+-- Menyimpan hasil konversi JSON ke dalam topik 'json_output_topic'
+CREATE STREAM json_output_stream
+    WITH (KAFKA_TOPIC='json_output_topic', VALUE_FORMAT='JSON');
